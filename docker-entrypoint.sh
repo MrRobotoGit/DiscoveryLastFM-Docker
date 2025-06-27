@@ -266,6 +266,7 @@ GITHUB_TOKEN = "${GITHUB_TOKEN:-}"
 GITHUB_REPO_OWNER = "MrRobotoGit"
 GITHUB_REPO_NAME = "DiscoveryLastFM"
 FALLBACK_EOF
+        then
             log_info "Configuration created using final fallback at $CONFIG_PATH"
         else
             log_error "Final fallback also failed. Container may not function properly."
