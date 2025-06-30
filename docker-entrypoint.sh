@@ -335,16 +335,75 @@ setup_cache() {
 }
 
 # ==============================================================================
+# Python Path Detection
+# ==============================================================================
+
+detect_python_path() {
+    # Detect Python interpreter path (prioritize venv)
+    local PY_PATH
+    if [[ -x "/opt/venv/bin/python" ]]; then
+        PY_PATH="/opt/venv/bin/python"
+    elif command -v python3 >/dev/null 2>&1; then
+        PY_PATH="$(command -v python3)"
+    elif command -v python >/dev/null 2>&1; then
+        PY_PATH="$(command -v python)"
+    else
+        PY_PATH="/opt/venv/bin/python"  # fallback
+    fi
+    
+    # Verify Python interpreter exists and is executable
+    if [[ ! -x "$PY_PATH" ]]; then
+        log_error "❌ Python interpreter not found or not executable: $PY_PATH"
+        return 1
+    fi
+    
+    log_debug "🐍 Detected Python interpreter: $PY_PATH"
+    echo "$PY_PATH"
+}
+
+# ==============================================================================
 # Cron Setup (for scheduled mode)
 # ==============================================================================
 
 setup_cron() {
     log_info "Setting up cron for scheduled execution..."
     
-    # Create cron job
-    echo "$CRON_SCHEDULE cd /app && python DiscoveryLastFM.py >> $LOG_PATH/cron.log 2>&1" | crontab -
+    # Get Python interpreter path
+    local PY_PATH
+    if ! PY_PATH=$(detect_python_path); then
+        log_error "❌ Failed to detect Python interpreter"
+        return 1
+    fi
+    
+    log_info "🐍 Using Python interpreter: $PY_PATH"
+    
+    # Create comprehensive cron job with full environment
+    local CRON_COMMAND="$CRON_SCHEDULE"
+    CRON_COMMAND="$CRON_COMMAND PATH=/opt/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+    CRON_COMMAND="$CRON_COMMAND CONFIG_PATH=\"$CONFIG_PATH\""
+    CRON_COMMAND="$CRON_COMMAND LOG_PATH=\"$LOG_PATH\""
+    CRON_COMMAND="$CRON_COMMAND CACHE_PATH=\"$CACHE_PATH\""
+    CRON_COMMAND="$CRON_COMMAND PYTHONUNBUFFERED=1"
+    CRON_COMMAND="$CRON_COMMAND PYTHONDONTWRITEBYTECODE=1"
+    CRON_COMMAND="$CRON_COMMAND && cd /app && \"$PY_PATH\" DiscoveryLastFM.py >> \"$LOG_PATH\"/cron.log 2>&1"
+    
+    # Log the cron command for debugging
+    log_debug "Cron command: $CRON_COMMAND"
+    
+    # Install cron job
+    echo "$CRON_COMMAND" | crontab -
     
     log_info "Cron job scheduled: $CRON_SCHEDULE"
+    log_info "🔍 Python path: $PY_PATH"
+    
+    # Verify cron job was installed
+    if crontab -l >/dev/null 2>&1; then
+        log_info "✅ Cron job installed successfully"
+        log_debug "Current crontab: $(crontab -l)"
+    else
+        log_error "❌ Failed to install cron job"
+        return 1
+    fi
     
     # Start cron daemon
     log_info "Starting cron daemon..."
@@ -361,6 +420,7 @@ setup_cron() {
         log_info "✅ Cron daemon started successfully (PID: $cron_pid)"
     else
         log_error "❌ Failed to start cron daemon as non-root user"
+        return 1
     fi
 }
 
@@ -460,7 +520,13 @@ main() {
     # Handle v2.1.0 CLI commands first
     if [[ "$1" == "--update" || "$1" == "--update-status" || "$1" == "--list-backups" || "$1" == "--version" || "$1" == "--cleanup" ]]; then
         log_info "Executing DiscoveryLastFM CLI command: $1"
-        exec python DiscoveryLastFM.py "$@"
+        local PY_PATH
+        if PY_PATH=$(detect_python_path); then
+            exec "$PY_PATH" DiscoveryLastFM.py "$@"
+        else
+            log_error "❌ Failed to detect Python interpreter for CLI command"
+            exit 1
+        fi
     fi
     
     case "$DISCOVERY_MODE" in
@@ -485,13 +551,22 @@ main() {
             
         "daemon")
             log_info "Running in daemon mode..."
+            
+            # Get Python interpreter path
+            local PY_PATH
+            if ! PY_PATH=$(detect_python_path); then
+                log_error "❌ Failed to detect Python interpreter for daemon mode"
+                exit 1
+            fi
+            log_info "🐍 Using Python interpreter: $PY_PATH"
+            
             while true; do
                 log_info "Running scheduled discovery..."
                 if [[ "$DRY_RUN" == "true" ]]; then
                     log_info "DRY RUN MODE - No actual changes will be made"
                     export DRY_RUN=true
                 fi
-                python DiscoveryLastFM.py >> "$LOG_PATH/daemon.log" 2>&1 || log_error "Discovery run failed"
+                "$PY_PATH" DiscoveryLastFM.py >> "$LOG_PATH/daemon.log" 2>&1 || log_error "Discovery run failed"
                 
                 # Calculate sleep time (default 3 hours)
                 SLEEP_HOURS=${SLEEP_HOURS:-3}
@@ -503,7 +578,16 @@ main() {
             
         "test")
             log_info "Running in test mode..."
-            python -c "
+            
+            # Get Python interpreter path
+            local PY_PATH
+            if ! PY_PATH=$(detect_python_path); then
+                log_error "❌ Failed to detect Python interpreter for test mode"
+                exit 1
+            fi
+            log_info "🐍 Using Python interpreter: $PY_PATH"
+            
+            "$PY_PATH" -c "
 import sys
 sys.path.append('/app')
 try:
