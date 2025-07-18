@@ -94,7 +94,7 @@ USER discoverylastfm
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
-ENV CONFIG_PATH="/app/config/config.py"
+ENV CONFIG_PATH="/app/config.py"
 ENV LOG_PATH="/app/logs"
 ENV CACHE_PATH="/app/cache"
 

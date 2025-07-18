@@ -135,7 +135,7 @@ DEBUG=false
 Test your configuration:
 ```bash
 # Validate configuration
-docker-compose exec discoverylastfm python /app/config/config.py
+docker-compose exec discoverylastfm python /app/config.py
 
 # Test service connectivity
 docker-compose exec discoverylastfm /usr/local/bin/health-check config
@@ -602,10 +602,10 @@ python -c "from services.factory import MusicServiceFactory; print('OK')"
 #### Reset Configuration
 ```bash
 # Backup current config
-docker-compose exec discoverylastfm cp /app/config/config.py /app/config/config.py.backup
+docker-compose exec discoverylastfm cp /app/config.py /app/config.py.backup
 
 # Reset to defaults
-docker-compose exec discoverylastfm cp /app/config.example.py /app/config/config.py
+docker-compose exec discoverylastfm cp /app/config.example.py /app/config.py
 
 # Restart with clean config
 docker-compose restart discoverylastfm

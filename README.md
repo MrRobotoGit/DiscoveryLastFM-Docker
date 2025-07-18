@@ -344,7 +344,7 @@ docker compose up -d
 ### Configuration Test
 ```bash
 # Test configuration
-docker compose exec discoverylastfm python /app/config/config.py
+docker compose exec discoverylastfm python /app/config.py
 ```
 
 ## 🚨 Troubleshooting

@@ -7,7 +7,7 @@
 set -euo pipefail
 
 # Default paths
-CONFIG_PATH="${CONFIG_PATH:-/app/config/config.py}"
+CONFIG_PATH="${CONFIG_PATH:-/app/config.py}"
 LOG_PATH="${LOG_PATH:-/app/logs}"
 # APP_PID_FILE="/tmp/discoverylastfm.pid"  # Currently unused
 

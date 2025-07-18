@@ -33,7 +33,7 @@ log_debug() {
 }
 
 # Default paths
-CONFIG_PATH="${CONFIG_PATH:-/app/config/config.py}"
+CONFIG_PATH="${CONFIG_PATH:-/app/config.py}"
 CONFIG_EXAMPLE_PATH="/app/config.example.py"
 LOG_PATH="${LOG_PATH:-/app/logs}"
 CACHE_PATH="${CACHE_PATH:-/app/cache}"

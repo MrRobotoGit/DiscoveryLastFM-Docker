@@ -61,7 +61,7 @@ services:
       - REQUEST_LIMIT=0.2
       - MBZ_DELAY=1.1
       # === CONTAINER PATHS ===
-      - CONFIG_PATH=/app/config/config.py
+      - CONFIG_PATH=/app/config.py
       - LOG_PATH=/app/logs
       - CACHE_PATH=/app/cache
       # === AUTO-UPDATE SYSTEM (v2.1.0+) REQUIRED ===
@@ -78,7 +78,7 @@ services:
       - logs:/app/logs
       - cache:/app/cache
       # Optional: Mount external config
-      # - ./config/config.py:/app/config/config.py:ro
+      # - ./config.py:/app/config.py:ro
       # Optional: Mount music directory (for Lidarr compatibility)
       # - /path/to/music:/music:ro
     # Health check
