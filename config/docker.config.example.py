@@ -143,13 +143,13 @@ def validate_configuration():
     if MUSIC_SERVICE == "lidarr":
         if not LIDARR_API_KEY or LIDARR_API_KEY == "your_lidarr_api_key":
             errors.append("LIDARR_API_KEY is required when using Lidarr")
-        if not LIDARR_ENDPOINT or LIDARR_ENDPOINT == "http://lidarr:8686":
+        if not LIDARR_ENDPOINT:
             errors.append("LIDARR_ENDPOINT should be configured")
     
     elif MUSIC_SERVICE == "headphones":
         if not HP_API_KEY or HP_API_KEY == "your_headphones_api_key":
             errors.append("HP_API_KEY is required when using Headphones")
-        if not HP_ENDPOINT or HP_ENDPOINT == "http://headphones:8181":
+        if not HP_ENDPOINT:
             errors.append("HP_ENDPOINT should be configured")
     
     else:
