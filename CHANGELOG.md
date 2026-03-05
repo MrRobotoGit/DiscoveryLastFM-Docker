@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.3] - 2026-03-05
+### Fixed
+- Resolved persistent configuration loading issues by adding a symlink for config.py in the app root (Fixes Issue #4 and #7).
+- Fixed inverted logic in docker-entrypoint.sh configuration generation.
+- Implemented robust environment variable injection for scheduled cron jobs via a dedicated environment file (Fixes Issue #2).
+- Ensured CONFIG_PATH is correctly exported across all execution modes.
+
 ## [2.1.2] - 2026-03-05
 ### Fixed
 - Updated docker-compose configuration to properly map all environment variables from .env file. Contributed by @Alon-L (PR #6).
