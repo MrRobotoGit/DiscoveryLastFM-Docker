@@ -33,6 +33,12 @@ on:
         - dockerhub
         - ghcr
 
+# Grant permissions to GitHub Token for package management
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+
 env:
   # Registry settings
   REGISTRY_DOCKERHUB: docker.io
@@ -182,7 +188,7 @@ jobs:
         with:
           registry: ${{ env.REGISTRY_GHCR }}
           username: ${{ github.actor }}
-          password: ${{ secrets.GHCR_TOKEN }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Download DiscoveryLastFM source
         run: |
