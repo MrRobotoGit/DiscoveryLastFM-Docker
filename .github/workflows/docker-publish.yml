@@ -129,7 +129,7 @@ jobs:
         with:
           images: |
             name=${{ env.REGISTRY_DOCKERHUB }}/mrrobotogit/${{ env.IMAGE_NAME }},enable=${{ steps.config.outputs.push-dockerhub }}
-            name=${{ env.REGISTRY_GHCR }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }},enable=${{ steps.config.outputs.push-ghcr }}
+            name=${{ env.REGISTRY_GHCR }}/mrrobotogit/${{ env.IMAGE_NAME }},enable=${{ steps.config.outputs.push-ghcr }}
           tags: |
             type=ref,event=branch
             type=ref,event=tag
@@ -187,7 +187,7 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY_GHCR }}
-          username: ${{ github.actor }}
+          username: mrrobotogit
           password: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Download DiscoveryLastFM source
