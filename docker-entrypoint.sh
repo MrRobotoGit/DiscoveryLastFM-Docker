@@ -124,6 +124,13 @@ setup_configuration() {
         log_error "Configuration file is not readable: $CONFIG_PATH"
         exit 1
     fi
+
+    # Create symlink in app root for Python import compatibility (Fixes Issue #4 and #7)
+    local APP_CONFIG_PATH="/app/config.py"
+    if [[ "$CONFIG_PATH" != "$APP_CONFIG_PATH" ]]; then
+        log_info "Creating symlink for Python import compatibility: $APP_CONFIG_PATH -> $CONFIG_PATH"
+        ln -sf "$CONFIG_PATH" "$APP_CONFIG_PATH" || log_warn "Failed to create symlink (this is normal if /app is read-only)"
+    fi
 }
 
 create_config_from_env() {
@@ -145,7 +152,7 @@ create_config_from_env() {
     fi
     
     # Attempt to write configuration with better error handling
-    if ! cat > "$CONFIG_PATH" 2>/dev/null << EOF
+    if cat > "$CONFIG_PATH" 2>/dev/null << EOF
 # DiscoveryLastFM Configuration - Generated from Environment Variables
 # Generated at: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
 
@@ -209,6 +216,7 @@ GITHUB_REPO_NAME = "DiscoveryLastFM"
 EOF
     then
         log_info "Configuration created from environment variables at $CONFIG_PATH"
+        export CONFIG_PATH
     else
         log_warn "Failed to write configuration file to $CONFIG_PATH. Trying final fallback."
         # Final fallback: try /tmp if not already there
@@ -265,7 +273,10 @@ GITHUB_TOKEN = "${GITHUB_TOKEN:-}"
 GITHUB_REPO_OWNER = "MrRobotoGit"
 GITHUB_REPO_NAME = "DiscoveryLastFM"
 FALLBACK_EOF
-            } && log_info "Configuration created using final fallback at $CONFIG_PATH" || {
+            } && {
+                log_info "Configuration created using final fallback at $CONFIG_PATH"
+                export CONFIG_PATH
+            } || {
                 log_error "Final fallback configuration write failed"
                 return 0  # Don't fail the container, continue anyway
             }
