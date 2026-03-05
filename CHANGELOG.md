@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [2.1.1] - 2026-03-05
+## [2.1.2] - 2026-03-05
 ### Fixed
 - Updated docker-compose configuration to properly map all environment variables from .env file. Contributed by @Alon-L (PR #6).
 - Enhanced configuration healthcheck logic to prevent false failures for valid values. Contributed by @nacho692 (PR #8).
