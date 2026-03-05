@@ -387,16 +387,33 @@ setup_cron() {
     fi
     
     log_info "🐍 Using Python interpreter: $PY_PATH"
+
+    # Export all relevant environment variables to a file that can be sourced by cron
+    # This ensures that API keys and other settings are available in the restricted cron environment
+    log_info "Exporting environment variables for cron..."
+    local ENV_FILE="/app/cron_env.sh"
     
-    # Create comprehensive cron job with full environment
+    # Clean old env file
+    true > "$ENV_FILE"
+    
+    # Selectively export variables to avoid system-specific conflicts but include all app settings
+    # We look for common prefixes used in this app
+    env | grep -E '^(LASTFM_|LIDARR_|HP_|MUSIC_|AUTO_UPDATE_|UPDATE_|BACKUP_|ALLOW_|GITHUB_|RECENT_|MIN_|SIMILAR_|MAX_|CACHE_|REQUEST_|MBZ_|DEBUG_|DRY_|CONFIG_|LOG_|CACHE_|PUID|PGID)' | while read -r line; do
+        # Properly quote values to handle special characters
+        local var_name="${line%%=*}"
+        local var_value="${line#*=}"
+        echo "export $var_name='${var_value//\'/\'\\\'\'}'" >> "$ENV_FILE"
+    done
+    
+    # Ensure the env file is readable
+    chmod 600 "$ENV_FILE"
+    chown discoverylastfm:discoverylastfm "$ENV_FILE" 2>/dev/null || true
+    
+    log_debug "Environment file created at $ENV_FILE"
+    
+    # Create comprehensive cron job that sources the environment file
     local CRON_COMMAND="$CRON_SCHEDULE"
-    CRON_COMMAND="$CRON_COMMAND PATH=/opt/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-    CRON_COMMAND="$CRON_COMMAND CONFIG_PATH=\"$CONFIG_PATH\""
-    CRON_COMMAND="$CRON_COMMAND LOG_PATH=\"$LOG_PATH\""
-    CRON_COMMAND="$CRON_COMMAND CACHE_PATH=\"$CACHE_PATH\""
-    CRON_COMMAND="$CRON_COMMAND PYTHONUNBUFFERED=1"
-    CRON_COMMAND="$CRON_COMMAND PYTHONDONTWRITEBYTECODE=1"
-    CRON_COMMAND="$CRON_COMMAND && cd /app && \"$PY_PATH\" DiscoveryLastFM.py >> \"$LOG_PATH\"/cron.log 2>&1"
+    CRON_COMMAND="$CRON_COMMAND . $ENV_FILE && cd /app && \"$PY_PATH\" DiscoveryLastFM.py >> \"$LOG_PATH\"/cron.log 2>&1"
     
     # Log the cron command for debugging
     log_debug "Cron command: $CRON_COMMAND"
