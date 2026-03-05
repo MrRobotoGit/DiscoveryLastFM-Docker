@@ -29,37 +29,37 @@ services:
       # - PUID=0                           # Run as root to allow cron setup
       # - PGID=0                           # Run as root to allow cron setup
       # === OPERATION MODE ===
-      - DISCOVERY_MODE=cron              # sync, cron, daemon, test
-      - CRON_SCHEDULE=0 3 * * *          # Daily at 3 AM
-      - SLEEP_HOURS=3
-      - DRY_RUN=false                    # Set to true for testing
-      - DEBUG=false                      # Enable debug logging
+      - DISCOVERY_MODE=${DISCOVERY_MODE}              # sync, cron, daemon, test
+      - CRON_SCHEDULE=${CRON_SCHEDULE}          # Daily at 3 AM
+      - SLEEP_HOURS=${SLEEP_HOURS}
+      - DRY_RUN=${DRY_RUN}                    # Set to true for testing
+      - DEBUG=${DEBUG}                      # Enable debug logging
       # === MUSIC SERVICE ===
-      - MUSIC_SERVICE=lidarr             # headphones or lidarr
+      - MUSIC_SERVICE=${MUSIC_SERVICE}             # headphones or lidarr
       # === LAST.FM CONFIGURATION (REQUIRED) ===
       - LASTFM_USERNAME=${LASTFM_USERNAME}
       - LASTFM_API_KEY=${LASTFM_API_KEY}
       # === LIDARR CONFIGURATION ===
       - LIDARR_API_KEY=${LIDARR_API_KEY}
-      - LIDARR_ENDPOINT=http://lidarr:8686
-      - LIDARR_ROOT_FOLDER=/music
-      - LIDARR_QUALITY_PROFILE_ID=1
-      - LIDARR_METADATA_PROFILE_ID=1
+      - LIDARR_ENDPOINT=${LIDARR_ENDPOINT}
+      - LIDARR_ROOT_FOLDER=${LIDARR_ROOT_FOLDER}
+      - LIDARR_QUALITY_PROFILE_ID=${LIDARR_QUALITY_PROFILE_ID}
+      - LIDARR_METADATA_PROFILE_ID=${LIDARR_METADATA_PROFILE_ID}
       - LIDARR_MONITOR_MODE=all
       - LIDARR_SEARCH_ON_ADD=true
       # === HEADPHONES CONFIGURATION (Alternative) ===
       - HP_API_KEY=${HP_API_KEY}
-      - HP_ENDPOINT=http://headphones:8181
+      - HP_ENDPOINT=${HP_ENDPOINT}
       # === DISCOVERY PARAMETERS ===
-      - RECENT_MONTHS=3
-      - MIN_PLAYS=20
-      - SIMILAR_MATCH_MIN=0.46
-      - MAX_SIMILAR_PER_ART=20
-      - MAX_POP_ALBUMS=5
-      - CACHE_TTL_HOURS=24
+      - RECENT_MONTHS=${RECENT_MONTHS}
+      - MIN_PLAYS=${MIN_PLAYS}
+      - SIMILAR_MATCH_MIN=${SIMILAR_MATCH_MIN}
+      - MAX_SIMILAR_PER_ART=${MAX_SIMILAR_PER_ART}
+      - MAX_POP_ALBUMS=${MAX_POP_ALBUMS}
+      - CACHE_TTL_HOURS=${CACHE_TTL_HOURS}
       # === API RATE LIMITING ===
-      - REQUEST_LIMIT=0.2
-      - MBZ_DELAY=1.1
+      - REQUEST_LIMIT=${REQUEST_LIMIT}
+      - MBZ_DELAY=${MBZ_DELAY}
       # === CONTAINER PATHS ===
       - CONFIG_PATH=/app/config/config.py
       - LOG_PATH=/app/logs
