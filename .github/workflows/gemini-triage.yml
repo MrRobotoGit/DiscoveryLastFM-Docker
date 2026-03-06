@@ -22,8 +22,8 @@ jobs:
     timeout-minutes: 7
     outputs:
       available_labels: '${{ steps.get_labels.outputs.available_labels }}'
-      selected_labels: '${{ env.SELECTED_LABELS }}'
-      analysis_summary: '${{ env.ANALYSIS_SUMMARY }}'
+      selected_labels: '${{ steps.capture_outputs.outputs.selected_labels }}'
+      analysis_summary: '${{ steps.capture_outputs.outputs.analysis_summary }}'
     permissions:
       contents: 'read'
       id-token: 'write'
@@ -97,6 +97,12 @@ jobs:
               }
             }
           prompt: '/gemini-triage'
+
+      - name: 'Capture outputs'
+        id: 'capture_outputs'
+        run: |-
+          echo "selected_labels=${SELECTED_LABELS}" >> $GITHUB_OUTPUT
+          echo "analysis_summary=${ANALYSIS_SUMMARY}" >> $GITHUB_OUTPUT
 
   label:
     runs-on: 'ubuntu-latest'
