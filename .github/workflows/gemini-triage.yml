@@ -23,6 +23,7 @@ jobs:
     outputs:
       available_labels: '${{ steps.get_labels.outputs.available_labels }}'
       selected_labels: '${{ env.SELECTED_LABELS }}'
+      analysis_summary: '${{ env.ANALYSIS_SUMMARY }}'
     permissions:
       contents: 'read'
       id-token: 'write'
@@ -105,6 +106,7 @@ jobs:
       ${{ needs.triage.outputs.selected_labels != '' }}
     permissions:
       contents: 'read'
+      id-token: 'write'
       issues: 'write'
       pull-requests: 'write'
     steps:
@@ -121,6 +123,7 @@ jobs:
           permission-pull-requests: 'write'
 
       - name: 'Apply labels'
+        id: 'apply_labels'
         env:
           ISSUE_NUMBER: '${{ github.event.issue.number }}'
           AVAILABLE_LABELS: '${{ needs.triage.outputs.available_labels }}'
@@ -156,3 +159,16 @@ jobs:
             } else {
               core.info(`Failed to determine labels to set. There may not be enough information in the issue or pull request.`)
             }
+
+      - name: 'Post analysis comment'
+        env:
+          GITHUB_TOKEN: '${{ steps.mint_identity_token.outputs.token || secrets.GITHUB_TOKEN || github.token }}'
+          ISSUE_NUMBER: '${{ github.event.issue.number }}'
+          ANALYSIS_SUMMARY: '${{ needs.triage.outputs.analysis_summary }}'
+          REPOSITORY: '${{ github.repository }}'
+        if: |-
+          ${{ needs.triage.outputs.analysis_summary != '' }}
+        run: |-
+          gh issue comment "${ISSUE_NUMBER}" \
+            --body "${ANALYSIS_SUMMARY}" \
+            --repo "${REPOSITORY}"
