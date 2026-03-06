@@ -29,3 +29,5 @@ logs/
 PRIVATE.md
 CLAUDE.md
 GEMINI.md
+.gemini/
+gha-creds-*.json
