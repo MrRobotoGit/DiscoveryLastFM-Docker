@@ -52,7 +52,6 @@ nano .env  # Edit with your Last.fm and Lidarr/Headphones credentials
 # UPDATE_CHECK_INTERVAL_HOURS=24
 
 # Start the streamlined stack (DiscoveryLastFM + Redis)
-# Note: First run will build the image with bash included
 docker compose up -d
 ```
 

@@ -15,9 +15,7 @@
 
 services:
   discoverylastfm:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: mrrobotogit/discoverylastfm:latest
     container_name: discoverylastfm
     hostname: discoverylastfm
     user: "0:0"
